@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+pydantic
+kafka-python
+redis
+celery 
+pyjwt
+python-dotenv
+boto3

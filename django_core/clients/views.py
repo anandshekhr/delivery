@@ -1,3 +1,4 @@
+from shared.jwt_utils import issue_jwt
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -30,17 +31,16 @@ class TokenView(APIView):
         client_id = request.data.get('client_id')
         secret_key = request.data.get('secret_key')
 
-        client = get_object_or_404(Client, id=client_id)
+        # Get client
+        try:
+            client = Client.objects.get(id=client_id)
+        except Client.DoesNotExist:
+            return Response({'error': 'Invalid client ID.'}, status=404)
 
-        # Check secret
+        # Verify secret
         if client.secret.secret_key != secret_key:
             return Response({'error': 'Invalid client credentials.'}, status=403)
 
-        # Generate JWT using SimpleJWT
-        refresh = RefreshToken.for_user(client)  # client is treated as "user" here
-        access_token = str(refresh.access_token)
-
-        return Response({
-            'access': access_token,
-            'refresh': str(refresh)
-        }, status=200)
+        # Issue JWT manually
+        token = issue_jwt({"client_id": str(client.id)})
+        return Response({'access_token': token}, status=200)

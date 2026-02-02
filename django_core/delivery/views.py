@@ -1,3 +1,4 @@
+from shared.jwt_utils import verify_jwt
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -14,13 +15,21 @@ producer = KafkaProducer(bootstrap_servers=os.environ['KAFKA_BOOTSTRAP_SERVERS']
                            value_serializer=lambda v: json.dumps(v).encode('utf-8'))
 
 class CompleteDelivery(APIView):
-    # Use JWTAuthentication
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        # request.user is already populated by JWTAuthentication
-        client_id = str(request.user.id)  # assuming user.id contains client_id
+        auth_header = request.headers.get("Authorization")
+        if not auth_header or not auth_header.startswith("Bearer "):
+            return Response({"error": "Authorization required"}, status=401)
+
+        token = auth_header.split(" ")[1]
+
+        try:
+            decoded = verify_jwt(token)
+            print("Decoded JWT:", decoded)
+        except Exception as e:
+            return Response({"error": str(e)}, status=401)
+
+        client_id = decoded["client_id"]
 
         event = EventEnvelope(
             event_id=uuid.uuid4(),

@@ -64,6 +64,8 @@ services:
       POSTGRES_PORT: 5432
       REDIS_HOST: redis
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      JWT_SECRET_KEY: f9a1c4d2b8e34f7ca9d6f5b2a7e8c1d3f4b6a9e7c2d1f8b5a6c9d3e7f2b1a4c6
+
 
   fastapi:
     build:

@@ -1,24 +1,28 @@
+from django.conf import settings
 import jwt
 from datetime import datetime, timedelta
 from pathlib import Path
 
-PRIVATE_KEY = Path("keys/private.pem").read_text()
-PUBLIC_KEY = Path("keys/public.pem").read_text()
-
-def issue_jwt(payload: dict, expires_in: int = 3600, client_id: str=None) -> str:
-    """Issue a JWT token with the given payload and expiration time."""
-    payload_copy = payload.copy()
-    payload_copy['exp'] = datetime.utcnow() + timedelta(seconds=expires_in)
-    if client_id:
-        payload_copy['client_id'] = client_id
-    payload_copy['iat'] = datetime.utcnow()
-    token = jwt.encode(payload_copy, PRIVATE_KEY, algorithm='RS256')
+def issue_jwt(payload: dict, expires_minutes: int = 60):
+    """
+    payload: dictionary of data to encode (e.g., {"client_id": str(client.id)})
+    returns: JWT string
+    """
+    token = jwt.encode(
+        payload | {"exp": datetime.utcnow() + timedelta(minutes=expires_minutes)},
+        settings.JWT_SECRET_KEY,
+        algorithm="HS256"
+    )
     return token
 
 def verify_jwt(token: str) -> dict:
-    """Verify a JWT token and return the decoded payload."""
+    """Verify a JWT token signed with HS256 and return the decoded payload."""
     try:
-        decoded = jwt.decode(token, PUBLIC_KEY, algorithms=['RS256'])
+        decoded = jwt.decode(
+            token,
+            settings.JWT_SECRET_KEY,  # use HS256 secret key
+            algorithms=['HS256']
+        )
         return decoded
     except jwt.ExpiredSignatureError:
         raise ValueError("Token has expired")

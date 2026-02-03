@@ -85,11 +85,11 @@ import os
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('POSTGRES_DB', 'postgres'),
+        'NAME': os.environ.get('POSTGRES_DB', 'delivery'),
         'USER': os.environ.get('POSTGRES_USER', 'postgres'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'postgres'),
-        'HOST': os.environ.get('POSTGRES_HOST', 'postgres'),
-        'PORT': os.environ.get('POSTGRES_PORT', '5432'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'Shekhar123#'),
+        'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
+        'PORT': os.environ.get('POSTGRES_PORT', '5433'),
     }
 }
 
@@ -144,18 +144,6 @@ CELERY_BROKER_URL = "redis://redis:6379/0"
 CELERY_RESULT_BACKEND = "redis://redis:6379/1"
 KAFKA_BOOTSTRAP_SERVERS = "kafka:9092"
 JWT_SECRET_KEY =os.environ.get('JWT_SECRET_KEY','f9a1c4d2b8e34f7ca9d6f5b2a7e8c1d3f4b6a9e7c2d1f8b5a6c9d3e7f2b1a4c6')
-
-
-# SIMPLE_JWT = {
-#     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),      # access token expiry
-#     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),         # refresh token expiry
-#     'ROTATE_REFRESH_TOKENS': True,
-#     'BLACKLIST_AFTER_ROTATION': True,
-#     'ALGORITHM': 'RS256',  # or 'HS256' if using RSA keys
-#     'SIGNING_KEY': open(BASE_DIR / 'keys' / 'private.pem').read(),
-#     'VERIFYING_KEY': open(BASE_DIR / 'keys' / 'public.pem').read(),
-# }
-
 
 SIMPLE_JWT = {
     'ALGORITHM': 'HS256',
